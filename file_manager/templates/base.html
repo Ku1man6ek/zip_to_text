@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Favicon и иконки -->
+    <link rel="icon" href="{% static 'images/icon.png' %}" type="image/png">
+    <link rel="shortcut icon" href="{% static 'images/icon.png' %}" type="image/png">
+    <link rel="apple-touch-icon" href="{% static 'images/icon.png' %}">
+
+    <!-- Заголовок будет переопределен в дочерних шаблонах -->
+    <title>{% block title %}ZIP Structure Converter{% endblock %}</title>
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    {% block content %}{% endblock %}
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

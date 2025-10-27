@@ -1,0 +1,224 @@
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История конвертаций</title>
+        <!-- Favicon -->
+    <link rel="icon" href="{% static 'images/icon.png' %}" type="image/png">
+    <link rel="shortcut icon" href="{% static 'images/icon.png' %}" type="image/png">
+    <style>
+        :root {
+            --ws-bg-primary: #0A0A0F;
+            --ws-bg-secondary: #15151F;
+            --ws-text-primary: #FFFFFF;
+            --ws-text-secondary: #B0B0C0;
+            --ws-accent-green: #00a651;
+            --ws-accent-teal: #00D4AA;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--ws-bg-primary);
+            color: var(--ws-text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .glass-effect {
+            background: rgba(21, 21, 31, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+        }
+
+        .back-btn {
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--ws-text-secondary);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            border-color: var(--ws-accent-green);
+            color: var(--ws-text-primary);
+        }
+
+        h1 {
+            color: var(--ws-text-primary);
+            font-weight: 300;
+            font-size: 2rem;
+        }
+
+        .projects-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .project-card {
+            background: rgba(21, 21, 31, 0.9);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .project-card:hover {
+            border-color: var(--ws-accent-green);
+            transform: translateY(-2px);
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .project-name {
+            color: var(--ws-text-primary);
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .project-meta {
+            color: var(--ws-text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .project-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-view {
+            background: var(--ws-accent-green);
+            color: white;
+        }
+
+        .btn-download {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--ws-text-primary);
+        }
+
+        .btn-delete {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--ws-text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            text-decoration: none;
+        }
+
+        .btn-view:hover {
+            background: var(--ws-accent-teal);
+            color: white;
+        }
+
+        .btn-download:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-delete:hover {
+            background: rgba(255, 77, 79, 0.2);
+            color: #ff4d4f;
+            border-color: #ff4d4f;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--ws-text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: var(--ws-text-secondary);
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="{% url 'home' %}" class="back-btn">← На главную</a>
+            <h1>История конвертаций</h1>
+            <a href="{% url 'upload' %}" class="back-btn">+ Новый проект</a>
+        </div>
+
+        <div class="projects-grid">
+            {% if projects %}
+                {% for project in projects %}
+                <div class="project-card glass-effect">
+                    <div class="project-header">
+                        <div>
+                            <div class="project-name">{{ project.name }}</div>
+                            <div class="project-meta">
+                                {{ project.uploaded_at|date:"d.m.Y H:i" }} • {{ project.file_size }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-actions">
+                        <a href="{% url 'view_file' project.id %}" class="btn btn-view">Просмотреть структуру</a>
+                        <a href="{% url 'download_file' project.id %}" class="btn btn-download">Скачать TXT</a>
+                        <form method="post" action="{% url 'delete_project' project.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-delete" onclick="return confirm('Удалить')">Удалить из истории</button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state glass-effect">
+                    <div class="empty-icon">📂</div>
+                    <h3>Нет завершенных конвертаций</h3>
+                    <p>Начните с загрузки ZIP архива для анализа структуры</p>
+                    <a href="{% url 'upload' %}" class="btn btn-view" style="margin-top: 20px; display: inline-block;">Загрузить проект</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,240 @@
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Загрузка ZIP архива</title>
+        <link rel="icon" href="{% static 'images/icon.png' %}" type="image/png">
+    <link rel="shortcut icon" href="{% static 'images/icon.png' %}" type="image/png">
+    <style>
+        :root {
+            --ws-bg-primary: #0A0A0F;
+            --ws-bg-secondary: #15151F;
+            --ws-text-primary: #FFFFFF;
+            --ws-text-secondary: #B0B0C0;
+            --ws-accent-green: #00a651;
+            --ws-accent-teal: #00D4AA;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--ws-bg-primary);
+            color: var(--ws-text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .glass-effect {
+            background: rgba(21, 21, 31, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .container {
+            background: rgba(21, 21, 31, 0.9);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .back-btn {
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--ws-text-secondary);
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            border-color: var(--ws-accent-green);
+            color: var(--ws-text-primary);
+        }
+
+        h1 {
+            color: var(--ws-text-primary);
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 300;
+            font-size: 1.8rem;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--ws-accent-green);
+            border-radius: 15px;
+            padding: 50px 25px;
+            text-align: center;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(0, 166, 81, 0.05);
+        }
+
+        .upload-area:hover {
+            background: rgba(0, 166, 81, 0.1);
+            border-color: var(--ws-accent-teal);
+        }
+
+        .upload-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            color: var(--ws-accent-green);
+        }
+
+        .upload-text {
+            color: var(--ws-text-primary);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--ws-accent-green), var(--ws-accent-teal));
+            color: white;
+            border: none;
+            padding: 16px 30px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(0, 166, 81, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error {
+            background: rgba(198, 40, 40, 0.1);
+            color: #ff6b6b;
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ff6b6b;
+            border: 1px solid rgba(198, 40, 40, 0.3);
+        }
+
+        .info-text {
+            text-align: center;
+            color: var(--ws-text-secondary);
+            font-size: 14px;
+            margin-top: 20px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container glass-effect">
+        <button class="back-btn" onclick="window.location.href='{% url 'home' %}'>
+            ← Назад
+        </button>
+
+        <h1>Загрузите ZIP архив</h1>
+
+        {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data" id="uploadForm">
+            {% csrf_token %}
+
+            <div class="upload-area" id="zipArea">
+                <div class="upload-icon">📦</div>
+                <div class="upload-text" id="zipText">
+                    <strong>Нажмите для выбора ZIP файла</strong><br>
+                    или перетащите архив сюда
+                </div>
+                <div style="color: var(--ws-text-secondary); font-size: 14px;">
+                    Поддерживаются ZIP архивы любого размера
+                </div>
+                <input type="file" name="zip_file" id="zip_file" class="file-input" accept=".zip" required>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn" disabled>
+                Сгенерировать структуру
+            </button>
+        </form>
+    </div>
+
+    <script>
+        const zipArea = document.getElementById('zipArea');
+        const zipInput = document.getElementById('zip_file');
+        const zipText = document.getElementById('zipText');
+        const submitBtn = document.getElementById('submitBtn');
+
+        zipArea.addEventListener('click', () => zipInput.click());
+
+        zipInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                const file = this.files[0];
+                const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+                zipText.innerHTML = `
+                    <strong>Выбран ZIP файл:</strong><br>
+                    ${file.name}<br>
+                    <small>Размер: ${fileSize} MB</small>
+                `;
+                submitBtn.disabled = false;
+            }
+        });
+
+        zipArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            zipArea.style.background = 'rgba(0, 166, 81, 0.15)';
+        });
+
+        zipArea.addEventListener('dragleave', () => {
+            zipArea.style.background = 'rgba(0, 166, 81, 0.05)';
+        });
+
+        zipArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            zipArea.style.background = 'rgba(0, 166, 81, 0.05)';
+
+            if (e.dataTransfer.files.length > 0) {
+                zipInput.files = e.dataTransfer.files;
+                const file = e.dataTransfer.files[0];
+                const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+                zipText.innerHTML = `
+                    <strong>Выбран ZIP файл:</strong><br>
+                    ${file.name}<br>
+                    <small>Размер: ${fileSize} MB</small>
+                `;
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

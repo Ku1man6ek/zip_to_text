@@ -1,0 +1,156 @@
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конвертор</title>
+        <!-- Favicon -->
+    <link rel="icon" href="{% static 'images/icon.png' %}" type="image/png">
+    <link rel="shortcut icon" href="{% static 'images/icon.png' %}" type="image/png">
+    <style>
+        :root {
+            --ws-bg-primary: #0A0A0F;
+            --ws-bg-secondary: #15151F;
+            --ws-text-primary: #FFFFFF;
+            --ws-text-secondary: #B0B0C0;
+            --ws-accent-green: #00a651;
+            --ws-accent-teal: #00D4AA;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--ws-bg-primary);
+            color: var(--ws-text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .glass-effect {
+            background: rgba(21, 21, 31, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .container {
+            background: rgba(21, 21, 31, 0.9);
+            border-radius: 20px;
+            padding: 50px 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 25px;
+            color: var(--ws-accent-green);
+        }
+
+        h1 {
+            color: var(--ws-text-primary);
+            margin-bottom: 15px;
+            font-weight: 300;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            color: var(--ws-text-secondary);
+            margin-bottom: 35px;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--ws-text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 16px 35px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 500;
+            margin: 0 10px 15px 10px;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            border-color: var(--ws-accent-green);
+            color: var(--ws-text-primary);
+        }
+
+        .user-info {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(21, 21, 31, 0.9);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--ws-accent-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            color: var(--ws-text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn:hover {
+            color: var(--ws-text-primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="user-info glass-effect">
+        <div class="user-avatar">
+            {{ user.username|first|upper }}
+        </div>
+        <div>
+            <div style="font-weight: 500; font-size: 0.9rem;">{{ user.username }}</div>
+            <a href="{% url 'logout' %}" class="logout-btn">Выйти</a>
+        </div>
+    </div>
+
+    <div class="container glass-effect">
+             <div class="logo"><img width="96" height="96" src="https://img.icons8.com/nolan/96/zip.png" alt="zip"/><img src="data:image/png;base64,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" alt="circled-right-2"><img src="data:image/png;base64,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" alt="txt"></div>
+        <h1>Преобразуйте ZIP архивы в детальные текстовые отчеты с полной иерархией файлов</h1>
+        <div>
+            <a href="{% url 'upload' %}" class="btn-secondary">Начать конвертировать</a>
+            <a href="{% url 'history' %}" class="btn-secondary">История конвертаций</a>
+        </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

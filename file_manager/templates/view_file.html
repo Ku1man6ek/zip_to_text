@@ -1,0 +1,132 @@
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр файла</title>
+        <link rel="icon" href="{% static 'images/icon.png' %}" type="image/png">
+    <link rel="shortcut icon" href="{% static 'images/icon.png' %}" type="image/png">
+    <style>
+        :root {
+            --ws-bg-primary: #0A0A0F;
+            --ws-bg-secondary: #15151F;
+            --ws-text-primary: #FFFFFF;
+            --ws-text-secondary: #B0B0C0;
+            --ws-accent-green: #00a651;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        }
+
+        body {
+            background: var(--ws-bg-primary);
+            color: #d4d4d4;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: rgba(21, 21, 31, 0.9);
+            padding: 20px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .project-info h1 {
+            color: var(--ws-text-primary);
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+            font-weight: 300;
+        }
+
+        .project-info .name {
+            color: var(--ws-accent-green);
+            word-break: break-all;
+            font-weight: 500;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, var(--ws-accent-green), #00D4AA);
+            color: white;
+        }
+
+        .btn-back {
+            background: transparent;
+            color: var(--ws-text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 166, 81, 0.3);
+            text-decoration: none;
+            color: white;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .content {
+            padding: 30px;
+            white-space: pre-wrap;
+            max-width: 100%;
+            overflow-x: auto;
+            background: var(--ws-bg-primary);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .btn {
+                flex: 1;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="project-info">
+            <h1>Структура проекта: <span class="name">{{ project.name }}</span></h1>
+        </div>
+        <div class="actions">
+            <a href="{% url 'download_file' project.id %}" class="btn btn-download">Скачать файл</a>
+            <a href="{% url 'home' %}" class="btn btn-back">← На главную</a>
+        </div>
+    </div>
+    <div class="content">{{ content }}</div>
+</body>
+</html>
